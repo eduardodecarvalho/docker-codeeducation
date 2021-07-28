@@ -1,12 +1,8 @@
-FROM golang
+FROM golang:alpine as build
 
-RUN apt-get update && \ 
-apt-get install vim -y
+COPY ./hello.go /go/hello.go
+RUN go build hello.go
 
-CMD cd src && mkdir hello \
-&& cd hello \
-&& go mod init src/hello \
-&& touch hello.go \
-&& echo 'package main; import "fmt"; func main() \
-{ fmt.Println("Code.education Rocks!") };' >> hello.go \
-&& go run .
+FROM scratch
+COPY --from=build /go/hello /app/hello
+CMD ["/app/hello"]
